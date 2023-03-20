@@ -1,5 +1,6 @@
 package com.dawoon.book.springboot.web;
 
+import com.dawoon.book.springboot.config.auth.LoginUser;
 import com.dawoon.book.springboot.config.auth.dto.SessionUser;
 import com.dawoon.book.springboot.service.posts.PostsService;
 import com.dawoon.book.springboot.web.dto.PostsResponseDto;
@@ -16,12 +17,11 @@ import javax.servlet.http.HttpSession;
 public class IndexController {
 
     private final PostsService postsService;
-    private final HttpSession httpSession;
 
     @GetMapping("/")
-    public String index(Model model) {
+    public String index(Model model, @LoginUser SessionUser user) { // 원래 httpSession.getAttribute("user")로 가져오던 세션 정보 값을 개선
+        // 어느 컨트롤러든지 @LoginUser만 사용하면 세션 정보를 가져올 수 있게 됨
         model.addAttribute("posts", postsService.findAllDesc());
-        SessionUser user = (SessionUser) httpSession.getAttribute("user"); // 로그인 성공 시 httpSession.getAttribute("user")에서 값을 가져올 수 있음
         if(user!=null){ // 세션에 저장된 값이 있으면 model에 userName으로 등록, 없으면 로그인 버튼이 보임
             model.addAttribute("userName", user.getName());
         }
